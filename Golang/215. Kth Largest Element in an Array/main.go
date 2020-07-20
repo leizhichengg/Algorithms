@@ -37,22 +37,22 @@ import (
 //	return heap.Pop(numsHeap).(int)
 //}
 
-func findKthLargest(nums []int, k int) int {
-	k = len(nums) - k
-	left := 0
-	right := len(nums) - 1
-	for left < right {
-		j := quickFind(nums, left, right)
-		if j == k {
-			break
-		} else if j < k {
-			left = j + 1
-		} else {
-			right = j - 1
-		}
-	}
-	return nums[k]
-}
+//func findKthLargest(nums []int, k int) int {
+//	k = len(nums) - k
+//	left := 0
+//	right := len(nums) - 1
+//	for left < right {
+//		j := quickFind(nums, left, right)
+//		if j == k {
+//			break
+//		} else if j < k {
+//			left = j + 1
+//		} else {
+//			right = j - 1
+//		}
+//	}
+//	return nums[k]
+//}
 
 func quickFind(nums []int, left, right int) int {
 	i := left
@@ -72,9 +72,64 @@ func quickFind(nums []int, left, right int) int {
 	return j
 }
 
+func findKthLargest(nums []int, k int) int {
+	left := 0
+	right := len(nums) - 1
+	for {
+		index := partition(nums, left, right)
+		if index == k-1 {
+			return nums[index]
+		} else if index < k {
+			left = index + 1
+		} else {
+			right = index - 1
+		}
+	}
+}
+
+func quickSort(nums []int, left, right, k int) {
+	if left < k && left < right {
+		p := partition(nums, left, right)
+		quickSort(nums, left, p, k)
+		quickSort(nums, p+1, right, k)
+	}
+}
+
+func partition(nums []int, left, right int) int {
+	if left == right {
+		return left
+	}
+	pivot := nums[left]
+	i, j := left+1, right
+	for {
+		for i <= right && nums[i] > pivot {
+			i++
+		}
+		for j >= left && nums[j] < pivot {
+			j--
+		}
+		if i == j {
+			if nums[j] > pivot {
+				nums[j], nums[left] = nums[left], nums[j]
+				return j
+			} else {
+				nums[j-1], nums[left] = nums[left], nums[j-1]
+				return j - 1
+			}
+		}
+		if i > j {
+			nums[j], nums[left] = nums[left], nums[j]
+			return j
+		}
+		nums[i], nums[j] = nums[j], nums[i]
+		i++
+		j--
+	}
+}
+
 func main() {
-	nums := []int{3, 2, 3, 1, 2, 4, 5, 5, 6}
-	k := 2
+	nums := []int{-1}
+	k := 1
 	ans := findKthLargest(nums, k)
 	fmt.Println(ans)
 }
